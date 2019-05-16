@@ -20,37 +20,49 @@ namespace LinqTask
         // Получение объектов отзывов у конкретного пользователя
         public IEnumerable<Review> GetUserReviews(int userId)
         {
-            throw new NotImplementedException();
+            return from review in this.reviews
+                   where review.UserId == userId
+                   select review;
         }
 
         // Оценивал ли кто-нибудь фильм
         public bool IsMovieReviewed(string movieName)
         {
-            throw new NotImplementedException();
+            return reviews.Any(r => r.Movie == movieName);
         }
 
         // Получить общие фильмы у двух пользователей
         public IEnumerable<string> CompareUsers(int user1, int user2)
         {
-            throw new NotImplementedException();
+            return reviews.Where(review => review.UserId == user1)
+                            .Select(review => review.Movie)
+                            .Intersect(reviews.Where(review => review.UserId == user2)
+                                               .Select(review => review.Movie));
         }
 
         // Получить "любимые" фильмы пользователя (оценка которых больше некоторого значения), упорядоченные по оценке
         public IEnumerable<string> GetFavouritesResources(int userId, int minimalMark = 5)
         {
-            throw new NotImplementedException();
+            return reviews.Where(review => review.UserId == userId)
+                           .Where(review => review.Mark > minimalMark)
+                           .OrderBy(review => review.Mark)
+                           .Select(review => review.Movie);
         }
 
         // Получить сумму четных оценок пользователя
         public int GetUserEvenSumMarks(int userId)
         {
-            throw new NotImplementedException();
+            return reviews.Where(review => review.UserId == userId)
+                            .Where(review => review.Mark % 2 == 0)
+                            .Sum(review => review.Mark);
         }
 
         // Получить среднюю оценку для каждого фильма
         public IEnumerable<(string, double)> GetMoviesMeanMark()
         {
-            throw new NotImplementedException();
+            return reviews.GroupBy(review => review.Movie)
+                            .Select(g => (g.Key, g.Average(review => review.Mark) ))
+                            ;
         }    
     }
 }
